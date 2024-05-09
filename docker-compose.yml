@@ -1,7 +1,8 @@
 version: '3.8'
 services:
   myapp:
-    image: myapp
+    build:
+      context: .
     ports:
       - "9000:9000"
     environment:
