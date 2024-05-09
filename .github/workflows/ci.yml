@@ -3,36 +3,24 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master  # Ensures the workflow runs on pushes to master branch
+      - master
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest  # The type of runner that the job will run on
-
-    services:
-      app:
-        image: myapp
-        ports:
-          - 9000:9000
-        env:
-          UVICORN_HOST: "0.0.0.0"
-          UVICORN_PORT: "9000"
-        options: >-  # Docker network settings
-          --network alias=myapp --network-alias app
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2  # Checks-out your repository under $GITHUB_WORKSPACE
+    - uses: actions/checkout@v2
 
-    - name: Set up Docker Compose
+    - name: Build and run containers
       run: |
-        docker-compose -f docker-compose.yml pull
-        docker-compose -f docker-compose.yml up -d
+        docker-compose up --build -d
 
-    - name: Run tests
+    - name: Execute tests
       run: |
-        docker-compose -f docker-compose.yml up --build -d
-        docker-compose -f docker-compose.yml run test
+        docker-compose run test
 
     - name: Clean up
       if: always()
-      run: docker-compose -f docker-compose.yml down
+      run: |
+        docker-compose down
