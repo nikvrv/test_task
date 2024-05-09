@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  myapp:
+    image: myapp
+    ports:
+      - "9000:9000"
+    environment:
+      UVICORN_HOST: "0.0.0.0"
+      UVICORN_PORT: "9000"
+    networks:
+      - app-network
+
+  test:
+    build:
+      context: https://github.com/nikvrv/tests_for_test_task.git#develop
+      dockerfile: Dockerfile
+    depends_on:
+      - myapp
+    environment:
+      - APP_URL=http://myapp:9000
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
